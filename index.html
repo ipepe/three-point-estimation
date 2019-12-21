@@ -1,6 +1,11 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <link href="assets/style.css" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/bootswatch/3.4.1/cosmo/bootstrap.min.css" rel="stylesheet">
+    <style> td > .input-group {
+        display: block
+    }</style>
+    <title>3-point estimation</title>
 </head>
 <body>
 <div class="container">
@@ -21,14 +26,22 @@
     </nav>
     <div class="row">
         <div class="col-md-12">
+            <div class="pull-right">
+                <button id="show-details-button" class="btn btn-primary">
+                    Show details
+                </button>
+            </div>
             <form>
                 <table class="table table-responsive">
                     <thead>
                     <tr>
-                        <th width="70%">Task</th>
+                        <th width="50%">Task</th>
                         <th>Best</th>
                         <th>Worst</th>
                         <th>Real</th>
+                        <th class="hidden">E(task)</th>
+                        <th class="hidden">SE(task)</th>
+                        <th class="hidden">SE(task)^2</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -55,10 +68,62 @@
                         </td>
                     </tr>
                     </tbody>
+                    <tfoot>
+                    <tr>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th class="hidden">E(project)</th>
+                        <th class="hidden">SE(project)</th>
+                        <th></th>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    </tfoot>
                 </table>
             </form>
         </div>
     </div>
 </div>
+<script type="application/javascript">
+    eTask = function (best, worst, mostLikely) {
+        return (best + worst + (4 * mostLikely)) / 6;
+    };
+    seTask = function (best, worst) {
+        return (worst - best) / 6;
+    };
+    square = function (number) {
+        return number * number
+    };
+    squareRoot = Math.sqrt;
+
+    projectEstimation = function (rows) {
+        return sum(rows)
+    };
+
+    projectStandardErrorEstimation = function (rows) {
+        return squareRoot(sum(square(seTask(row))))
+    };
+
+    minimumProjectTime = function (project) {
+        return projectEstimation(project) - projectEstimation(project);
+    };
+    maximumProjectTime = function (project) {
+        return projectEstimation(project) + projectEstimation(project)
+    };
+    document.getElementById('show-details-button').onclick = function () {
+        document.querySelectorAll('.hidden').forEach(function (element) {
+            element.classList.remove('hidden');
+        })
+    }
+</script>
 </body>
 </html>
