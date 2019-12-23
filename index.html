@@ -2,9 +2,7 @@
 <html lang="en">
 <head>
     <link href="https://stackpath.bootstrapcdn.com/bootswatch/3.4.1/cosmo/bootstrap.min.css" rel="stylesheet">
-    <style> td > .input-group {
-        display: block
-    }</style>
+    <style> td > .input-group {display: block}</style>
     <title>3-point estimation</title>
 </head>
 <body>
@@ -44,48 +42,26 @@
                         <th class="hidden">SE(task)^2</th>
                     </tr>
                     </thead>
-                    <tbody>
-                    <tr>
-                        <td>
-                            <div class="input-group">
-                                <input type="text" class="form-control">
-                            </div>
-                        </td>
-                        <td>
-                            <div class="input-group">
-                                <input type="number" class="form-control">
-                            </div>
-                        </td>
-                        <td>
-                            <div class="input-group">
-                                <input type="number" class="form-control">
-                            </div>
-                        </td>
-                        <td>
-                            <div class="input-group">
-                                <input type="number" class="form-control">
-                            </div>
-                        </td>
-                    </tr>
+                    <tbody id="table-body">
                     </tbody>
                     <tfoot>
                     <tr>
                         <th></th>
+                        <th>E(project)</th>
                         <th></th>
-                        <th></th>
-                        <th></th>
-                        <th class="hidden">E(project)</th>
-                        <th class="hidden">SE(project)</th>
-                        <th></th>
+                        <th>SE(project)</th>
+                        <th class="hidden"></th>
+                        <th class="hidden"></th>
+                        <th class="hidden"></th>
                     </tr>
                     <tr>
                         <td></td>
+                        <td id="sum-e-task">0</td>
                         <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td id="sum-se-task">0</td>
+                        <td class="hidden"></td>
+                        <td class="hidden"></td>
+                        <td class="hidden"></td>
                     </tr>
                     </tfoot>
                 </table>
@@ -94,6 +70,7 @@
     </div>
 </div>
 <script type="application/javascript">
+
     eTask = function (best, worst, mostLikely) {
         return (best + worst + (4 * mostLikely)) / 6;
     };
@@ -123,7 +100,70 @@
         document.querySelectorAll('.hidden').forEach(function (element) {
             element.classList.remove('hidden');
         })
-    }
+    };
+
+    calculateValues = function(){
+
+    };
+
+    addTableBodyRow = function(){
+        var table_body = document.getElementById('table-body');
+        var tr = document.createElement('tr');
+        tr.innerHTML = '<td>' +
+            '<div class="input-group">' +
+            '<input type="text" class="form-control">' +
+            '</div>' +
+            '</td>' +
+            '<td>' +
+            '<div class="input-group">' +
+            '<input type="number" class="form-control best">' +
+            '</div>' +
+            '</td>' +
+            '<td>' +
+            '<div class="input-group">' +
+            '<input type="number" class="form-control worst">' +
+            '</div>' +
+            '</td>' +
+            '<td>' +
+            '<div class="input-group">' +
+            '<input type="number" class="form-control mostlikely">' +
+            '</div>' +
+            '</td>' +
+            '<td class="e-task"></td>' +
+            '<td class="se-task"></td>' +
+            '<td class="se-task-2"></td>';
+        table_body.append(tr)
+    };
+
+    needNewRow = function(inputs){
+        var length_of_inputs = [];
+        inputs.forEach(function(input){
+            length_of_inputs.push(input.value.length)
+        });
+        return !length_of_inputs.some(function(length){ return length === 0 })
+    };
+
+    onChange = function() {
+        console.log('on change');
+        hookOnChangeEvents()
+    };
+
+    hookOnChangeEvents = function(){
+        var inputs = document.querySelectorAll('input') || [];
+        if(needNewRow(document.querySelectorAll('input[type="text"]'))){
+            addTableBodyRow()
+        }
+
+        inputs.forEach(function(input){
+            ['onchange', 'onfocus', 'onblur', 'onkeydown'].forEach(function(hookName){
+               input[hookName] = onChange
+            });
+        });
+        calculateValues();
+    };
+
+    addTableBodyRow();
+    hookOnChangeEvents();
 </script>
 </body>
 </html>
