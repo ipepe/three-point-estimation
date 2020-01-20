@@ -1,1 +1,3 @@
  * highlight highest seTask()
+ * smaller css (single file containing whole tool)
+ * service worker for offline use
