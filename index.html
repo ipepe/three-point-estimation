@@ -33,10 +33,10 @@
                 <table class="table table-responsive">
                     <thead>
                     <tr>
-                        <th width="50%">Task</th>
-                        <th>Best</th>
-                        <th>Worst</th>
-                        <th>Real</th>
+                        <th width="40%">Task</th>
+                        <th width="10%">Best</th>
+                        <th width="10%">Worst</th>
+                        <th width="10%">Real</th>
                         <th class="hidden">E(task)</th>
                         <th class="hidden">SE(task)</th>
                         <th class="hidden">SE(task)^2</th>
@@ -77,10 +77,14 @@
     seTask = function (best, worst) {
         return (worst - best) / 6;
     };
+
     square = function (number) {
         return number * number
     };
-    squareRoot = Math.sqrt;
+
+    squareRoot = function(number){
+        return Math.sqrt(parseFloat(number));
+    };
 
     projectEstimation = function (rows) {
         return sum(rows)
@@ -96,13 +100,47 @@
     maximumProjectTime = function (project) {
         return projectEstimation(project) + projectEstimation(project)
     };
+    var hiddenFlag = true;
     document.getElementById('show-details-button').onclick = function () {
-        document.querySelectorAll('.hidden').forEach(function (element) {
-            element.classList.remove('hidden');
-        })
+        if(hiddenFlag){
+            document.querySelectorAll('.hidden').forEach(function (element) {
+                element.classList.remove('hidden');
+                element.classList.add('unhidden');
+            });
+            hiddenFlag = false;
+        }else{
+            document.querySelectorAll('.unhidden').forEach(function (element) {
+                element.classList.remove('unhidden');
+                element.classList.add('hidden');
+            });
+            hiddenFlag = true;
+        }
+
     };
 
     calculateValues = function(){
+        var sumETask = 0;
+        var sumSE2Task = 0;
+
+        document.querySelectorAll('#table-body tr').forEach(function(tr){
+            var best = parseFloat(tr.querySelector('.best').value || '0');
+            var worst = parseFloat(tr.querySelector('.worst').value || '0');
+            var mostLikely = parseFloat(tr.querySelector('.mostlikely').value || '0');
+
+            var eTaskValue = eTask(best, worst, mostLikely).toFixed(2);
+            var seTaskValue = seTask(best, worst).toFixed(2);
+            var se2TaskValue = square(seTask(best, worst)).toFixed(2);
+
+            sumETask += parseFloat(eTaskValue);
+            sumSE2Task += parseFloat(se2TaskValue);
+
+            tr.querySelector('.e-task').textContent = eTaskValue;
+            tr.querySelector('.se-task').textContent = seTaskValue;
+            tr.querySelector('.se-task-2').textContent = se2TaskValue;
+        });
+
+        document.getElementById('sum-e-task').textContent = parseFloat(sumETask).toFixed(2);
+        document.getElementById('sum-se-task').textContent = parseFloat(squareRoot(sumSE2Task)).toFixed(2);
 
     };
 
@@ -129,9 +167,9 @@
             '<input type="number" class="form-control mostlikely">' +
             '</div>' +
             '</td>' +
-            '<td class="e-task"></td>' +
-            '<td class="se-task"></td>' +
-            '<td class="se-task-2"></td>';
+            '<td class="e-task hidden"></td>' +
+            '<td class="se-task hidden"></td>' +
+            '<td class="se-task-2 hidden"></td>';
         table_body.append(tr)
     };
 
